@@ -6,10 +6,10 @@
 [![GitHub release](https://img.shields.io/github/release/meodai/color-names.svg)](https://github.com/meodai/color-names/)
 [![npm version](https://img.shields.io/npm/v/color-name-list.svg)](https://www.npmjs.com/package/color-name-list)
 [![npm](https://img.shields.io/npm/dt/color-name-list.svg)](https://www.npmjs.com/package/color-name-list)
-[![name count](https://img.shields.io/badge/__30246__-names-orange.svg)](https://github.com/meodai/color-names/blob/master/src/colornames.csv)
+[![name count](https://img.shields.io/badge/__30241__-names-orange.svg)](https://github.com/meodai/color-names/blob/master/src/colornames.csv)
 [![github sponsor count](https://img.shields.io/github/sponsors/meodai)](https://github.com/sponsors/meodai)
 
-A handpicked list of __30246__ unique color names from
+A handpicked list of __30241__ unique color names from
 [various sources](#sources-) and thousands of curated user submissions.
 
 > The names of color function like a thread attached to a frightfully slender
@@ -23,7 +23,7 @@ A handpicked list of __30246__ unique color names from
   | <a href="#usage-">Usage</a>
   | <a href="#cdn-">CDN</a>
   | <a href="#api-">Public Rest API</a>
-  | <a href="#usage-js-">Usage JS</a>
+  | <a href="#usage-js-">Usage JS/Java/Kotlin</a>
   | <a href="#sources-">Name Sources</a>
   | <a href="#latest-color-names-">Latest Color Names</a>
   | <a href="#costs--sponsors">Sponsors</a>
@@ -54,7 +54,7 @@ __[via form 🌈](https://docs.google.com/forms/d/e/1FAIpQLSfbS5D6owA4dQupJJ-6qh
 
 Make sure to read the [naming rules](CONTRIBUTING.md) before you contribute!
 
-## Color Count: __30246__ 🎉
+## Color Count: __30241__ 🎉
 
 ~__0.18%__ of the RGB color space
 
@@ -176,6 +176,63 @@ npm install && npm run build
 
 See [package.json](package.json#L6) for more.
 
+### Usage Java/Kotlin ⌨
+
+Java/Kotlin usage is maintained through this library:
+[UwUAroze/Color-Names](https://github.com/UwUAroze/Color-Names).
+Additional info can be found there, but basic usage is outlined below:
+
+#### Importing - Gradle.kts
+
+```kts
+repositories {
+      maven("https://jitpack.io")
+}
+
+dependencies {
+      implementation("me.aroze:color-names:1.0.2")
+}
+```
+
+#### Importing - Maven
+
+```xml
+<repository>
+  <id>jitpack.io</id>
+  <url>https://jitpack.io</url>
+</repository>
+
+<dependency>
+  <groupId>me.aroze</groupId>
+  <artifactId>color-names</artifactId>
+  <version>1.0.2</version>
+</dependency>
+```
+
+#### Closest named color - Java
+
+```java
+public ColorNames colorNames = new ColorNameBuilder()
+  .loadDefaults()
+  .build();
+
+String fromHex = colorNames.getName("#facfea"); // "Classic Rose"
+String fromRGB = colorNames.getName(224, 224, 255); // "Stoic White"
+String fromColor = colorNames.getName(new Color(255, 219, 240)); // "Silky Pink"
+```
+
+#### Closest named color - Kotlin
+
+```kt
+val colorNames = ColorNameBuilder()
+  .loadDefaults()
+  .build()
+
+val fromHex = colorNames.getName("#facfea") // "Classic Rose"
+val fromRGB = colorNames.getName(224, 224, 255) // "Stoic White"
+val fromColor = colorNames.getName(Color(255, 219, 240)) // "Silky Pink"
+```
+
 ## Sources 🗒
 
 ### Sources: Names 📇
@@ -222,23 +279,19 @@ See [package.json](package.json#L6) for more.
 
 ### Sponsors
 
-#### Gold
+<!-- markdownlint-disable -->
+<!-- sponsors --><a href="https://github.com/dy"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;300067?u&#x3D;efb99487680bfaec22ca6433211108df3adeb52e&amp;v&#x3D;4" width="60px" alt="Dmitry Iv." /></a><a href="https://github.com/someguy9"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;62267?u&#x3D;aa297269cca2e6466b937abaeca5d6a8914922f2&amp;v&#x3D;4" width="60px" alt="Andy Feliciotti" /></a><a href="https://github.com/CanadaHonk"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;19228318?u&#x3D;eea29901f58d6357f0fc2992747d0b4b80d23c8e&amp;v&#x3D;4" width="60px" alt="Oliver Medhurst" /></a><!-- sponsors -->
+<!-- markdownlint-enable -->
 
-- [Colorful Dots] 500USD/year
+### Past Sponsors
 
-#### Silver
-
-- [neverything] 25USD/month
-- [Dmitry Iv.] 10USD/month
-- [colorkit.co] 10USD/month
-
-#### Bronze
-
+- [Colorful Dots] 500USD
 - [krissymashinsky.com] 300USD
 - [color.museum] 100CHF
 - [@tunnckoCore] 50USD
 - [Myriam Aerne] 20CHF
 - [Amin] 15USD
+- [neverything] 25USD/month
 
 ### Project Costs USD
 
@@ -281,6 +334,7 @@ See [package.json](package.json#L6) for more.
 , [BlueChaos]
 , [nachtfunke]
 , Sean Gibbons
+, Brantley Sibo
 
 ## Disclaimer 👮🏾‍
 

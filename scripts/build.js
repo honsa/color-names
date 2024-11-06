@@ -26,6 +26,9 @@ const fileNameSrc = 'colornames';
 const fileNameBestOfPostfix = '.bestof';
 const readmeFileName = 'README.md';
 
+const fileNameShortPostfix = '.short';
+const maxShortNameLength = 12;
+
 const sortBy = 'name';
 const csvKeys = ['name', 'hex'];
 const bestOfKey = 'good name';
@@ -71,14 +74,22 @@ colorsSrc.values['name'].forEach((name) => {
 });
 
 // loop good name markers
-colorsSrc.values['good name'].forEach((str) => {
+colorsSrc.values[bestOfKey].forEach((str) => {
   // check for spaces
   if (spacesValidation.test(str)) {
-    log('"good name" marker', str, `${str} found either a leading or trailing space (or both)`);
+    log(
+      `"${bestOfKey}" marker'`,
+      str,
+      `${str} found either a leading or trailing space (or both)`
+    );
   }
 
-  if (!(str == 'x' || str == '')) {
-    log('"good name" marker', str, `${str} must be a lowercase "x" character or empty`);
+  if (!(str == "x" || str == "")) {
+    log(
+      `"${bestOfKey}" marker`,
+      str,
+      `${str} must be a lowercase "x" character or empty`
+    );
   }
 });
 
@@ -101,13 +112,31 @@ const JSONExportString = JSON.stringify(
 
 const JSONExportStringBestOf = JSON.stringify(
   [...colorsSrc.entires].filter(
-    (val) => (val['good name'])
+    (val) => (val[bestOfKey])
   ).map( // removes good name attributes
     (val) => ({
       name: val.name,
       hex: val.hex,
     })
   )
+);
+
+const JSONExportStringShort = JSON.stringify(
+  [...colorsSrc.entires]
+    .filter(
+      // make sure its only one word long
+      (val) =>
+        val[bestOfKey] &&
+        //val.name.split(" ").length === 1 &&
+        val.name.length < maxShortNameLength + 1
+    )
+    .map(
+      // removes good name attributes
+      (val) => ({
+        name: val.name,
+        hex: val.hex,
+      })
+    )
 );
 
 fs.writeFileSync(
@@ -120,6 +149,11 @@ fs.writeFileSync(
   JSONExportStringBestOf
 );
 
+fs.writeFileSync(
+  path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameShortPostfix}.json`),
+  JSONExportStringShort
+);
+
 // creates a more compact JSON file, where the HEX color serves as an id
 const miniJSONExportObj = colorsSrc.entires.reduce((obj, entry) => {
   obj[entry.hex.replace('#', '')] = entry.name;
@@ -127,8 +161,19 @@ const miniJSONExportObj = colorsSrc.entires.reduce((obj, entry) => {
 }, {});
 
 const miniJSONExportObjBestOf = colorsSrc.entires.reduce((obj, entry) => {
-  if(entry['good name']) {
+  if(entry[bestOfKey]) {
     obj[entry.hex.replace('#', '')] = entry.name;
+  }
+  return obj;
+}, {});
+
+const miniJSONExportObjShort = colorsSrc.entires.reduce((obj, entry) => {
+  if (
+    entry[bestOfKey] &&
+    //entry.name.split(" ").length === 1 &&
+    entry.name.length < maxShortNameLength + 1
+  ) {
+    obj[entry.hex.replace("#", "")] = entry.name;
   }
   return obj;
 }, {});
@@ -141,6 +186,11 @@ fs.writeFileSync(
 fs.writeFileSync(
   path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameBestOfPostfix}.min.json`),
   JSON.stringify(miniJSONExportObjBestOf)
+);
+
+fs.writeFileSync(
+  path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameShortPostfix}.min.json`),
+  JSON.stringify(miniJSONExportObjShort)
 );
 
 // gets UMD template
@@ -158,6 +208,11 @@ fs.writeFileSync(
 fs.writeFileSync(
   path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameBestOfPostfix}.umd.js`),
   umdTpl.replace('"{{COLORS}}"', JSONExportStringBestOf)
+);
+
+fs.writeFileSync(
+  path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameShortPostfix}.umd.js`),
+  umdTpl.replace('"{{COLORS}}"', JSONExportStringShort)
 );
 
 // gets ESM template
@@ -183,6 +238,15 @@ fs.writeFileSync(
 fs.writeFileSync(
   path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameBestOfPostfix}.esm.mjs`),
   esmTpl.replace('"{{COLORS}}"', JSONExportStringBestOf)
+);
+
+fs.writeFileSync(
+  path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameShortPostfix}.esm.js`),
+  esmTpl.replace('"{{COLORS}}"', JSONExportStringShort)
+);
+fs.writeFileSync(
+  path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameShortPostfix}.esm.mjs`),
+  esmTpl.replace('"{{COLORS}}"', JSONExportStringShort)
 );
 
 // create foreign formats
@@ -242,7 +306,7 @@ for (const outputFormat in outputFormats) {
 for (const outputFormat in outputFormats) {
   if (outputFormats[outputFormat]) {
     let outputString = objArrToString(
-      colorsSrc.entires.filter((val) => (val['good name'])),
+      colorsSrc.entires.filter((val) => (val[bestOfKey])),
       csvKeys,
       outputFormats[outputFormat]
     );
@@ -251,6 +315,29 @@ for (const outputFormat in outputFormats) {
     }
     fs.writeFileSync(
       path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameBestOfPostfix}.${outputFormat}`),
+      outputString
+    );
+  }
+}
+
+// short files
+for (const outputFormat in outputFormats) {
+  if (outputFormats[outputFormat]) {
+    let outputString = objArrToString(
+      colorsSrc.entires.filter(
+        (val) =>
+          val[bestOfKey] &&
+          //val.name.split(" ").length === 1 &&
+          val.name.length < maxShortNameLength + 1
+      ),
+      csvKeys,
+      outputFormats[outputFormat]
+    );
+    if (outputFormat === 'html' || outputFormat === 'xml') {
+      outputString = outputString.replace(/&/g, '&amp;');
+    }
+    fs.writeFileSync(
+      path.normalize(`${baseFolder}${folderDist}${fileNameSrc}${fileNameShortPostfix}.${outputFormat}`),
       outputString
     );
   }
@@ -331,22 +418,27 @@ const svgTpl = fs.readFileSync(
 
 // generates an SVG image with the new color based on the diff ot the last commit to the current
 function diffSVG() {
-  exec(`git diff HEAD ${baseFolder}${folderDist}${fileNameSrc}.csv`,
-  function (err, stdout, stderr) {
-    const diffTxt = stdout;
-    if (!/(?<=^[\+])[^\+].*/gm.test(diffTxt)) return;
-    const changes = diffTxt.match(/(?<=^[\+])[^\+].*/gm).filter(i => i);
-    const svgTxtStr = changes.reduce((str, change, i) => {
-      const changeParts = change.split(',');
-      return `${str}<text x="40" y="${20 + (i + 1) * 70}" fill="${changeParts[1]}">${changeParts[0].replace(/&/g, '&amp;')}</text>`;
-    }, '');
+  exec(
+    `git diff -U0 HEAD ${baseFolder}${folderDist}${fileNameSrc}.csv | tr -d '\\n'`,
+    function (err, stdout, stderr) {
+      const diffTxt = stdout;
+      if (!/(?<=^[\+])[^\+].*/gm.test(diffTxt)) return;
+      const changes = diffTxt.match(/(?<=^[\+])[^\+].*/gm).filter((i) => i);
+      const svgTxtStr = changes.reduce((str, change, i) => {
+        const changeParts = change.split(",");
+        return `${str}<text x="40" y="${20 + (i + 1) * 70}" fill="${
+          changeParts[1]
+        }">${changeParts[0].replace(/&/g, "&amp;")}</text>`;
+      }, "");
 
-    fs.writeFileSync(
-      path.normalize(`${baseFolder}changes.svg`),
-      svgTpl.replace(/{height}/g, changes.length * 70 + 80)
-        .replace(/{items}/g, svgTxtStr)
-    );
-  });
+      fs.writeFileSync(
+        path.normalize(`${baseFolder}changes.svg`),
+        svgTpl
+          .replace(/{height}/g, changes.length * 70 + 80)
+          .replace(/{items}/g, svgTxtStr)
+      );
+    }
+  );
 };
 
 diffSVG();
